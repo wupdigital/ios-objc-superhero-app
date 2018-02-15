@@ -10,6 +10,7 @@ target 'SuperheroApp' do
 
   # Pods for SuperheroApp
   pod 'AFNetworking', '~> 3.0'
+  pod 'AFNetworkActivityLogger', :git => 'https://github.com/AFNetworking/AFNetworkActivityLogger.git', :branch => '3_0_0'
 
   target 'SuperheroAppTests' do
     inherit! :search_paths

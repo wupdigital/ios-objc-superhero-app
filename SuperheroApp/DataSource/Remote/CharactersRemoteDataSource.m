@@ -114,11 +114,9 @@
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull err) {
-        NSLog(@"Error during load characters: %@", [err localizedDescription]);
-        NSData *response = err.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSString *responseString = [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
-        NSLog(@"Error response: %@", responseString);
-        error();
+        if (error) {
+            error();
+        }
     }];
 }
 

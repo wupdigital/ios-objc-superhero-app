@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "CharacterDetailViewController.h"
+#import <AFNetworkActivityLogger/AFNetworkActivityLogger.h>
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -17,6 +18,9 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    [[AFNetworkActivityLogger sharedLogger] startLogging];
+    
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
