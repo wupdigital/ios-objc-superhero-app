@@ -8,8 +8,6 @@
 
 #import "UseCaseNSOperationSheduler.h"
 
-#import "UseCaseDelegate.h"
-
 @interface UseCaseNSOperationSheduler()
 
 @property(nonatomic, retain) NSOperationQueue *queue;
@@ -34,15 +32,15 @@
     [self.queue addOperationWithBlock:executable];
 }
 
-- (void)notifyError:(id<UseCaseDelegate>)useCaseDelegate {
+- (void)notifyError:(void (^)(void))error {
     [self.mainQueue addOperationWithBlock:^{
-        [useCaseDelegate onError];
+        error();
     }];
 }
 
-- (void)notifyResponse:(id<UseCaseDelegate>)useCaseDelegate of:(id<UseCaseResponse>)response {
+- (void)notifyResponse:(id<UseCaseResponse>)response success:(void (^)(id<UseCaseResponse>))success {
     [self.mainQueue addOperationWithBlock:^{
-        [useCaseDelegate onSuccess:response];
+        success(response);
     }];
 }
 

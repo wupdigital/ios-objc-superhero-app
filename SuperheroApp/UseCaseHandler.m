@@ -9,7 +9,6 @@
 #import "UseCaseHandler.h"
 
 #import "UseCase.h"
-#import "UseCaseDelegate.h"
 #import "UseCaseScheduler.h"
 #import "UseCaseNSOperationSheduler.h"
 
@@ -17,41 +16,9 @@
 
 @property(nonatomic, strong) id<UseCaseScheduler> useCaseSheduler;
 
-- (void)notifyResponse:(id<UseCaseDelegate>)useCaseDelegate of:(id<UseCaseResponse>)response;
+- (void)notifyResponse:(id<UseCaseResponse>)response success:(void (^)(id<UseCaseResponse>))success;
 
-- (void)notifyError:(id<UseCaseDelegate>)useCaseDelegate;
-
-@end
-
-@interface UiDelegateWrapper : NSObject<UseCaseDelegate>
-
-@property(nonatomic, strong) id<UseCaseDelegate> useCaseDelegate;
-@property(nonatomic, strong) UseCaseHandler *useCaseHandler;
-
-- (instancetype)initWithDelegate:(id<UseCaseDelegate>)useCaseDelegate and:(UseCaseHandler *)useCaseHandler;
-
-@end
-
-@implementation UiDelegateWrapper
-
-- (instancetype)initWithDelegate:(id<UseCaseDelegate>)useCaseDelegate and:(UseCaseHandler *)useCaseHandler {
-    self = [super init];
-    
-    if (self) {
-        self.useCaseDelegate = useCaseDelegate;
-        self.useCaseHandler = useCaseHandler;
-    }
-    
-    return self;
-}
-
-- (void)onSuccess:(id<UseCaseResponse>)response {
-    [self.useCaseHandler notifyResponse:self.useCaseDelegate of:response];
-}
-
-- (void)onError {
-    [self.useCaseHandler notifyError:self.useCaseDelegate];
-}
+- (void)notifyError:(void (^)(void))error;
 
 @end
 
@@ -71,21 +38,27 @@
     return self;
 }
 
-- (void)execute:(UseCase *)useCase withRequest:(id<UseCaseRequest>)request and:(id<UseCaseDelegate>)useCaseDelegate {
+- (void)execute:(UseCase *)useCase withRequest:(id<UseCaseRequest>)request success:(void (^)(id<UseCaseResponse>))success error:(void (^)(void))error {
     useCase.request = request;
-    useCase.useCaseDelegate = [[UiDelegateWrapper alloc] initWithDelegate:useCaseDelegate and:self];
+    useCase.success = ^(id<UseCaseResponse> response) {
+        [self notifyResponse:response success:success];
+    };
+    
+    useCase.error = ^{
+        [self notifyError:error];
+    };
     
     [self.useCaseSheduler execute:^{
         [useCase run];
     }];
 }
 
-- (void)notifyResponse:(id<UseCaseDelegate>)useCaseDelegate of:(id<UseCaseResponse>)response {
-    [self.useCaseSheduler notifyResponse:useCaseDelegate of:response];
+- (void)notifyResponse:(id<UseCaseResponse>)response success:(void (^)(id<UseCaseResponse>))success {
+    [self.useCaseSheduler notifyResponse:response success:success];
 }
 
-- (void)notifyError:(id<UseCaseDelegate>)useCaseDelegate {
-    [self.useCaseSheduler notifyError:useCaseDelegate];
+- (void)notifyError:(void (^)(void))error {
+    [self.useCaseSheduler notifyError:error];
 }
 
 @end

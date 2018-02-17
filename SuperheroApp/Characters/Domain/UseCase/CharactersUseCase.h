@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "UseCase.h"
-#import "UseCaseRequest.h"
-#import "UseCaseResponse.h"
 
 @class Character;
 @class Page;
@@ -24,7 +22,8 @@
 @interface CharactersUseCaseRequest : NSObject<UseCaseRequest>
 
 @property(nonatomic, strong) Page *page;
-@property(nonatomic, assign) BOOL force;
+
+- (instancetype)initWithPage:(Page *)page;
 
 @end
 

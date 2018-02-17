@@ -39,6 +39,23 @@
     [self.thumbnailImageView setImageWithURL:[NSURL URLWithString:character.thumbnailUrl]];
 }
 
+- (void)showNoCharacter {
+    
+}
+
+- (void)showLoadingIndicator {
+    
+}
+
+- (void)hideLoadingIndicator {
+    
+}
+
+- (void)showErrorMessage:(NSString *)message {
+    
+}
+
+
 - (void)setCharacterId:(NSString *)characterId {
     _characterId = characterId;
     [self loadContent];

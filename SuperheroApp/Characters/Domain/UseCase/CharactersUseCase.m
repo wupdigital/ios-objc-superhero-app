@@ -10,7 +10,6 @@
 #import "CharactersDataSource.h"
 #import "CharactersRepository.h"
 #import "Page.h"
-#import "UseCaseDelegate.h"
 
 @interface CharactersUseCase()
 
@@ -39,10 +38,14 @@
     
     CharactersUseCaseRequest *charactersRequest = (CharactersUseCaseRequest *)request;
     
+    __weak CharactersUseCase *weakSelf = self;
+    
     [self.charactersDataSource loadCharacters:charactersRequest.page complete:^(NSArray<Character *> *characters) {
-        [self onCharactersLoaded:characters];
+        CharactersUseCaseResponse * response = [CharactersUseCaseResponse new];
+        response.characters = characters;
+        weakSelf.success(response);
     } error:^{
-        [self onCharactersNotLoaded];
+        weakSelf.error();
     }];
     
 }
@@ -50,16 +53,26 @@
 - (void)onCharactersLoaded:(NSArray<Character *> *)characters {
     CharactersUseCaseResponse * response = [CharactersUseCaseResponse new];
     response.characters = characters;
-    [self.useCaseDelegate onSuccess:response];
+    self.success(response);
 }
 
 - (void)onCharactersNotLoaded {
-    [self.useCaseDelegate onError];
+    self.error();
 }
 
 @end
 
 @implementation CharactersUseCaseRequest
+
+- (instancetype)initWithPage:(Page *)page {
+    self = [super init];
+    
+    if (self) {
+        self.page = page;
+    }
+    
+    return self;
+}
 
 @end
 

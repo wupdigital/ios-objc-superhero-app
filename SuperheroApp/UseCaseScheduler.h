@@ -15,8 +15,8 @@
 
 - (void)execute:(void (^)(void))executable;
 
-- (void)notifyResponse:(id<UseCaseDelegate>)useCaseDelegate of:(id<UseCaseResponse>)response;
+- (void)notifyResponse:(id<UseCaseResponse>)response success:(void (^)(id<UseCaseResponse>))success;
 
-- (void)notifyError:(id<UseCaseDelegate>)useCaseDelegate;
+- (void)notifyError:(void (^)(void))error;
 
 @end

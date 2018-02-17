@@ -9,7 +9,6 @@
 #import "GetCharacterUseCase.h"
 #import "CharactersDataSource.h"
 #import "CharactersRepository.h"
-#import "UseCaseDelegate.h"
 
 @interface GetCharacterUseCase()
 
@@ -41,9 +40,9 @@
     [self.charactersDataSource loadCharacter:characterRequest.characterId complete:^(Character *character) {
         GetCharacterResponse *response = [GetCharacterResponse new];
         response.character = character;
-        [self.useCaseDelegate onSuccess:response];
+        self.success(response);
     } error:^{
-        [self.useCaseDelegate onError];
+        self.error();
     }];
 }
 

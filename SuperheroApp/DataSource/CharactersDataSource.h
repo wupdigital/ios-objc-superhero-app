@@ -15,7 +15,7 @@
 
 - (void)loadCharacters:(Page *)page complete:(void(^)(NSArray<Character *> *))complete error:(void(^)(void))error;
 
-- (void)loadCharacter:(NSString *)characterId complete:(void(^)(Character *))complete error:(void(^)(void))error;;
+- (void)loadCharacter:(NSString *)characterId complete:(void(^)(Character *))complete error:(void(^)(void))error;
 
 - (void)saveCharacters:(NSArray<Character *> *)characters complete:(void(^)(void))complete error:(void(^)(void))error;
 

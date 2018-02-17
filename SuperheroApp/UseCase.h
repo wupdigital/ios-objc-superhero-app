@@ -8,13 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol UseCaseRequest;
-@protocol UseCaseDelegate;
+@protocol UseCaseRequest <NSObject>
+
+@end
+
+@protocol UseCaseResponse <NSObject>
+
+@end
 
 @interface UseCase : NSObject
 
-@property(nonatomic, strong) id<UseCaseRequest> request;
-@property(nonatomic, strong) id<UseCaseDelegate> useCaseDelegate;
+@property(nonatomic, strong) id <UseCaseRequest> request;
+@property (nonatomic, copy) void (^success)(id<UseCaseResponse>);
+@property (nonatomic, copy) void (^error)(void);
 
 - (void)run;
 

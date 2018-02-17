@@ -15,6 +15,14 @@
 
 - (void)showCharacter:(Character *)character;
 
+- (void)showNoCharacter;
+
+- (void)showErrorMessage:(NSString *)message;
+
+- (void)showLoadingIndicator;
+
+- (void)hideLoadingIndicator;
+
 @end
 
 @protocol CharacterDetailMvpPreseneter <MvpPresenter>

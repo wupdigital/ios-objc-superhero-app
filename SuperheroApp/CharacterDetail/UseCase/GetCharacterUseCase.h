@@ -7,8 +7,6 @@
 //
 
 #import "UseCase.h"
-#import "UseCaseRequest.h"
-#import "UseCaseResponse.h"
 
 @protocol CharactersDataSource;
 @class Character;

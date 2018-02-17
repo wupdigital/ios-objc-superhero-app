@@ -10,11 +10,10 @@
 #import "CharactersUseCase.h"
 #import "Page.h"
 #import "UseCaseHandler.h"
-#import "UseCaseDelegate.h"
 
 static const NSUInteger DEFAULT_LIMIT = 100;
 
-@interface CharactersPresenter() <UseCaseDelegate>
+@interface CharactersPresenter()
 
 @property(nonatomic, weak) id<CharactersMvpView> view;
 @property(nonatomic, strong) UseCaseHandler *useCaseHandler;
@@ -48,10 +47,22 @@ static const NSUInteger DEFAULT_LIMIT = 100;
     
     [self.view setLoadingIndicator:YES];
     self.currentPage = [[Page alloc] initWithLimit:DEFAULT_LIMIT andOffset:0];
-    CharactersUseCaseRequest *request = [CharactersUseCaseRequest new];
-    request.page = self.currentPage;
+    CharactersUseCaseRequest *request = [[CharactersUseCaseRequest alloc] initWithPage:self.currentPage];
     
-    [self.useCaseHandler execute:[CharactersUseCase new] withRequest:request and:self];
+    __weak CharactersPresenter *weakSelf = self;
+    
+    [self.useCaseHandler execute:[CharactersUseCase new] withRequest:request success:^(id<UseCaseResponse> response) {
+        [weakSelf.view setLoadingIndicator:NO];
+        
+        CharactersUseCaseResponse *charactersResponse = (CharactersUseCaseResponse *)response;
+        
+        if (charactersResponse.characters.count > 0) {
+            [weakSelf.view showCharacters:charactersResponse.characters];
+        }
+    } error:^{
+        [weakSelf.view setLoadingIndicator:NO];
+        [weakSelf.view showLoadingCharactersError:@"Something wrong"];
+    }];
 }
 
 - (void)loadMoreCharacters {
@@ -61,30 +72,18 @@ static const NSUInteger DEFAULT_LIMIT = 100;
     CharactersUseCaseRequest *request = [CharactersUseCaseRequest new];
     request.page = self.currentPage;
     
-    [self.useCaseHandler execute:[CharactersUseCase new] withRequest:request and:self];
-}
-
-- (void)onError {
-    [self stopLoading];
-    [self.view showLoadingCharactersError:@"Something wrong"];
-}
-
-- (void)onSuccess:(id<UseCaseResponse>)response {
-    CharactersUseCaseResponse *charactersResponse = (CharactersUseCaseResponse *)response;
-    
-    [self stopLoading];
-    
-    if (charactersResponse.characters.count > 0) {
-        [self.view showCharacters:charactersResponse.characters];
-    }
-}
-
-- (void)stopLoading {
-    if (self.currentPage.offset == 0) {
-        [self.view setLoadingIndicator:NO];
-    } else {
+    [self.useCaseHandler execute:[CharactersUseCase new] withRequest:request success:^(id<UseCaseResponse> response) {
         [self.view setMoreLoadingIndicator:NO];
-    }
+        
+        CharactersUseCaseResponse *charactersResponse = (CharactersUseCaseResponse *)response;
+        
+        if (charactersResponse.characters.count > 0) {
+            [self.view showCharacters:charactersResponse.characters];
+        }
+    } error:^{
+        [self.view setMoreLoadingIndicator:NO];
+        [self.view showLoadingCharactersError:@"Something wrong"];
+    }];
 }
 
 @end

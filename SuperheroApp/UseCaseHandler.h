@@ -10,13 +10,13 @@
 
 @class UseCase;
 @protocol UseCaseRequest;
-@protocol UseCaseDelegate;
+@protocol UseCaseResponse;
 @protocol UseCaseScheduler;
 
 @interface UseCaseHandler : NSObject
 
 - (instancetype)initWithScheduler:(id<UseCaseScheduler>)scheduler NS_DESIGNATED_INITIALIZER;
 
-- (void)execute:(UseCase *)useCase withRequest:(id<UseCaseRequest>)request and:(id<UseCaseDelegate>)useCaseDelegate;
+- (void)execute:(UseCase *)useCase withRequest:(id<UseCaseRequest>)request success:(void (^)(id<UseCaseResponse>))success error:(void (^)(void))error;
 
 @end

@@ -9,9 +9,8 @@
 #import "CharacterDetailPresenter.h"
 #import "GetCharacterUseCase.h"
 #import "UseCaseHandler.h"
-#import "UseCaseDelegate.h"
 
-@interface CharacterDetailPresenter() <UseCaseDelegate>
+@interface CharacterDetailPresenter()
 
 @property(nonatomic, weak) id<CharacterDetailMvpView> view;
 @property(nonatomic, strong) UseCaseHandler *useCaseHandler;
@@ -39,20 +38,19 @@
 }
 
 - (void)loadCharacter:(NSString *)characterId {
+    [self.view showLoadingIndicator];
     
     GetCharacterRequest *request = [GetCharacterRequest new];
     request.characterId = characterId;
     
-    [self.useCaseHandler execute:[GetCharacterUseCase new] withRequest:request and:self];
-}
-
-- (void)onError {
-    
-}
-
-- (void)onSuccess:(id<UseCaseResponse>)response {
-    GetCharacterResponse *characterResponse = (GetCharacterResponse *)response;
-    [self.view showCharacter:characterResponse.character];
+    [self.useCaseHandler execute:[GetCharacterUseCase new] withRequest:request success:^(id<UseCaseResponse> response) {
+        [self.view hideLoadingIndicator];
+        GetCharacterResponse *characterResponse = (GetCharacterResponse *)response;
+        [self.view showCharacter:characterResponse.character];
+    } error:^{
+        [self.view hideLoadingIndicator];
+        [self.view showErrorMessage:@"Something wrong!"];
+    }];
 }
 
 @end
